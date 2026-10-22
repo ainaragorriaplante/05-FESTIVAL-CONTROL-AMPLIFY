@@ -1,33 +1,50 @@
-# FESTIVAL CONTROL · React Native + Expo Web
+# FESTIVAL CONTROL · React Native + AWS Amplify Gen 2
 
-Demo **frontend-only** para la charla de AWS Amplify. Mantiene la identidad visual del cuaderno 04-PILARES-SERVERLESS: fondo `#090909`, cards `#151515`, acento `#FF2F92`, confirmado `#39D98A` y retrasado `#F5C542`.
+Aplicación fullstack con **Expo Web** y backend en la nube mediante **AWS Amplify Gen 2** (Code-first TypeScript con AWS AppSync GraphQL y Amazon DynamoDB).
 
-## Inicio rápido
+Mantiene la identidad visual del cuaderno 04-PILARES-SERVERLESS: fondo `#090909`, cards `#151515`, acento `#FF2F92`, confirmado `#39D98A` y retrasado `#F5C542`.
+
+---
+
+## 🚀 Inicio rápido (Frontend local)
 
 ```bash
 npm install
-npx expo install --fix
 npm run web
 ```
+> La aplicación iniciará en modo local con datos de respaldo si aún no has desplegado tu sandbox en AWS.
 
-## Exportación para AWS Amplify Hosting
+---
 
-```bash
-npm run build:web
-```
+## ☁️ Conexión al Backend en la Nube (AWS Amplify Sandbox)
 
-El resultado estático se genera en `dist/`. En Amplify: conectar GitHub, rama `main`, usar `amplify.yml` y publicar `dist/`. No requiere AWS Academy, Lambda ni API Gateway.
+Para desplegar tu entorno personal de desarrollo en AWS (DynamoDB + AppSync):
 
-## Prueba de alumno
+1. **Configura tus credenciales de AWS** (si usas AWS Academy o SSO):
+   ```bash
+   aws configure
+   # O exporta AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY y AWS_SESSION_TOKEN
+   ```
 
-1. Abrir **Eventos** y filtrar por escenario o artista.
-2. Crear `TECHNO TITANS`, escenario `MAIN STAGE`, hora `21:45` y estado `CONFIRMED`.
-3. Editar el evento y cambiar la hora a `23:00`.
-4. Cambiar el estado a `DELAYED`.
-5. Eliminar el evento.
+2. **Inicia el sandbox de Amplify**:
+   ```bash
+   npm run amplify:sandbox
+   ```
+   Esto creará automáticamente la tabla en **DynamoDB**, la API en **AppSync** y generará el archivo `amplify_outputs.json` en la raíz. Al recargar la app web, verás la insignia `● AWS CLOUD CONECTADO`.
 
-**Datos simulados en memoria:** los cambios se pierden al recargar la página. Las operaciones no son HTTP reales. Para probar el despliegue automático, cambiar el subtítulo de la aplicación, hacer commit y push y observar el nuevo build en Amplify.
+---
 
-## Referencia docente
+## 🛠️ Estructura del Backend (Amplify Gen 2)
 
-https://github.com/albertohdezakkari/04-PILARES-SERVERLESS
+- [amplify/data/resource.ts](file:///amplify/data/resource.ts): Definición del modelo de datos `FestivalEvent` (`artist`, `space`, `time`, `status`) y políticas de autorización.
+- [amplify/auth/resource.ts](file:///amplify/auth/resource.ts): Configuración de autenticación (Amazon Cognito).
+- [amplify/backend.ts](file:///amplify/backend.ts): Punto de entrada y orquestador del backend.
+- [src/eventsService.ts](file:///src/eventsService.ts): Capa de servicio con soporte en tiempo real (`observeQuery`) y fallback local transparente.
+
+---
+
+## 📦 Despliegue en AWS Amplify Hosting (CI/CD)
+
+El archivo [amplify.yml](file:///amplify.yml) ya está preparado para despliegue fullstack continuo:
+1. Conecta este repositorio en la consola de **AWS Amplify Hosting**.
+2. Amplify detectará automáticamente la carpeta `amplify/` y ejecutará el despliegue del backend y frontend en cada push a la rama `main`.
